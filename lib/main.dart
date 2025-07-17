@@ -1,3 +1,4 @@
+import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:flutter/material.dart';
 import './models/lesson.dart';
 import './widgets/lesson_card.dart';
@@ -31,10 +32,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int selectedIndex = 0;
+  final lessonProvider = LessonProvider();
 
   void _incrementCounter() {
     setState(() {
       _counter++;
+      lessonProvider.addLesson(testLessons[(_counter-1) % testLessons.length]);
     });
   }
 
@@ -105,25 +108,16 @@ class UpcomingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LessonProvider lessonProvider = LessonProvider();
+    List<Lesson> lessons = lessonProvider.getLessons();
+    final children = [
+      for (final lesson in lessons) LessonCard(lesson: lesson),
+      Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
+    ];
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          LessonCard(lesson: Lesson.fromJson(testJson)),
-          // Card(
-          //   color: Theme.of(context).colorScheme.secondary,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(20.0),
-          //     child: Text(
-          //       'No lessons yet',
-          //       style: Theme.of(context).textTheme.displayMedium!.copyWith(
-          //         color: Theme.of(context).colorScheme.onSecondary,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
-        ],
+        children: children,
       ),
     );
   }
