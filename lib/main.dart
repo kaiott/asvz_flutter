@@ -1,4 +1,5 @@
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
+import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
 import './models/lesson.dart';
 import './widgets/lesson_card.dart';
@@ -38,6 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
       lessonProvider.addLesson(testLessons[(_counter-1) % testLessons.length]);
+    });
+    showDialog(context: context, builder: (context) {
+      return LessonInputDialog(onSubmit: (lessonId) {
+        // Ftech lesson by ID, add to provider
+        print("Lesson id entered: $lessonId");
+      });
     });
   }
 
