@@ -1,4 +1,4 @@
-class Lesson {
+class Lesson implements Comparable<Lesson> {
   final DateTime enrollmentFrom;
   final DateTime enrollmentUntil;
   final DateTime cancelationUntil;
@@ -46,6 +46,9 @@ class Lesson {
       sportName: json["sportName"],
     );
   }
+  
+  @override
+  int compareTo(Lesson other) => starts.compareTo(other.starts);
 }
 
 final Map<String, dynamic> testJson = {

@@ -16,7 +16,5 @@ class LessonProvider {
     return true;
   }
 
-  List<Lesson> getLessons() {
-    return [for (final id in lessons.keys.toList()..sort()) lessons[id]!];
-  }
+  List<Lesson> getLessons() => lessons.values.toList()..sort();
 }
