@@ -11,7 +11,7 @@ Future<Lesson> fetchLesson(int id) async {
   final url = Uri.https(baseUrl, resourcePath);
   final response = await http.get(url);
   if (response.statusCode != 200) {
-    throw HttpException("Non-okay status code from request.", uri: url);
+    throw HttpException("Non-okay status code ${response.statusCode} from request", uri: url);
   }
   final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
   final lesson = Lesson.fromJson(jsonResponse["data"]);

@@ -37,21 +37,22 @@ class _MyHomePageState extends State<MyHomePage> {
   final lessonProvider = LessonProvider();
 
   void _addButtonClicked() {
-    // setState(() {
-    //   _counter++;
-    //   // lessonProvider.addLesson(testLessons[(_counter-1) % testLessons.length]);
-    // });
     showDialog(context: context, builder: (context) {
       return LessonInputDialog(onSubmit: (lessonId) async {
-        // Ftech lesson by ID, add to provider
-        print("Lesson id entered: $lessonId");
-        final lesson = await fetchLesson(lessonId);
-        print(lesson.sportName);
-        print(lesson.starts);
-        setState(() {
-          _counter++;
-          lessonProvider.addLesson(lesson);
-        });
+        try {
+          final lesson = await fetchLesson(lessonId);
+          final added = lessonProvider.addLesson(lesson);
+          if (!added) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Lesson already added.')),
+            );
+          }
+          setState(() {});
+        } catch(e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to fetch lesson: $e')),
+          );
+        }
       });
     });
   }
