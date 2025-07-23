@@ -1,11 +1,7 @@
 import 'package:asvz_autosignup/models/lesson.dart';
+import 'package:flutter/material.dart';
 
-class LessonProvider {
-  static final LessonProvider _instance = LessonProvider._internal();
-  factory LessonProvider() => _instance;
-
-  LessonProvider._internal();
-
+class LessonProvider extends ChangeNotifier{
   final Map<int, Lesson> lessons = <int, Lesson>{};
 
   bool addLesson(Lesson lesson) {
@@ -13,6 +9,7 @@ class LessonProvider {
       return false;
     }
     lessons[lesson.id] = lesson;
+    notifyListeners();
     return true;
   }
 

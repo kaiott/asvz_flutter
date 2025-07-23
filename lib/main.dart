@@ -2,11 +2,17 @@ import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './models/lesson.dart';
 import './widgets/lesson_card.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => LessonProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -34,27 +40,34 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int selectedIndex = 0;
-  final lessonProvider = LessonProvider();
+  //final lessonProvider = LessonProvider();
 
   void _addButtonClicked() {
-    showDialog(context: context, builder: (context) {
-      return LessonInputDialog(onSubmit: (lessonId) async {
-        try {
-          final lesson = await fetchLesson(lessonId);
-          final added = lessonProvider.addLesson(lesson);
-          if (!added) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Lesson already added.')),
-            );
-          }
-          setState(() {});
-        } catch(e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to fetch lesson: $e')),
-          );
-        }
-      });
-    });
+    showDialog(
+      context: context,
+      builder: (context) {
+        return LessonInputDialog(
+          onSubmit: (lessonId) async {
+            final messenger = ScaffoldMessenger.of(context);
+            final lessonProvider = context.read<LessonProvider>();
+            try {
+              final lesson = await fetchLesson(lessonId);
+              final added = lessonProvider.addLesson(lesson);
+              if (!added) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text('Lesson already added.')),
+                );
+              }
+              //setState(() {});
+            } catch (e) {
+              messenger.showSnackBar(
+                SnackBar(content: Text('Failed to fetch lesson: $e')),
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -103,7 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
               ),
-              Expanded(child: Container(color: Theme.of(context).colorScheme.primaryContainer, child: page)),
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: page,
+                ),
+              ),
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -124,8 +142,8 @@ class UpcomingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LessonProvider lessonProvider = LessonProvider();
-    List<Lesson> lessons = lessonProvider.getLessons();
+    //final LessonProvider lessonProvider = LessonProvider();
+    List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
     final children = [
       for (final lesson in lessons) LessonCard(lesson: lesson),
       Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
