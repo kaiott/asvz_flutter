@@ -1,4 +1,5 @@
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
+import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
 import './models/lesson.dart';
@@ -35,15 +36,22 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   final lessonProvider = LessonProvider();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-      lessonProvider.addLesson(testLessons[(_counter-1) % testLessons.length]);
-    });
+  void _addButtonClicked() {
+    // setState(() {
+    //   _counter++;
+    //   // lessonProvider.addLesson(testLessons[(_counter-1) % testLessons.length]);
+    // });
     showDialog(context: context, builder: (context) {
-      return LessonInputDialog(onSubmit: (lessonId) {
+      return LessonInputDialog(onSubmit: (lessonId) async {
         // Ftech lesson by ID, add to provider
         print("Lesson id entered: $lessonId");
+        final lesson = await fetchLesson(lessonId);
+        print(lesson.sportName);
+        print(lesson.starts);
+        setState(() {
+          _counter++;
+          lessonProvider.addLesson(lesson);
+        });
       });
     });
   }
@@ -98,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: _incrementCounter,
+            onPressed: _addButtonClicked,
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
