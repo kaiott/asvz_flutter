@@ -9,7 +9,7 @@ class LessonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat("dd.MM.yyyy");
+    final DateFormat dateFormat = DateFormat("EEE dd.MM.yyyy");
     final DateFormat timeFormat = DateFormat("HH:mm");
     const double iconSize = 12;
     const double statusIconSize = 24;

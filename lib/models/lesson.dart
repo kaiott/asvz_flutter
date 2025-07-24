@@ -31,11 +31,11 @@ class Lesson implements Comparable<Lesson> {
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
     return Lesson(
-      enrollmentFrom: DateTime.parse(json["enrollmentFrom"]),
-      enrollmentUntil: DateTime.parse(json["enrollmentUntil"]),
-      cancelationUntil: DateTime.parse(json["cancelationUntil"]),
-      starts: DateTime.parse(json["starts"]),
-      ends: DateTime.parse(json["ends"]),
+      enrollmentFrom: DateTime.parse(json["enrollmentFrom"]).toLocal(),
+      enrollmentUntil: DateTime.parse(json["enrollmentUntil"]).toLocal(),
+      cancelationUntil: DateTime.parse(json["cancelationUntil"]).toLocal(),
+      starts: DateTime.parse(json["starts"]).toLocal(),
+      ends: DateTime.parse(json["ends"]).toLocal(),
       participantsMax: json["participantsMax"],
       participantCount: json["participantCount"],
       instructors: List<String>.from((json["instructors"] as List).map((x) => x["name"] as String)),
