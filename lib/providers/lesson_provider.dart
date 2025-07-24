@@ -12,5 +12,11 @@ class LessonProvider extends ChangeNotifier {
     return added;
   }
 
+  bool removeLesson(Lesson lesson) {
+    final removed = _store.remove(lesson.id);
+    if (removed) notifyListeners();
+    return removed;
+  }
+
   List<Lesson> getLessons() => _store.all;
 }

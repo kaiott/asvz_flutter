@@ -13,5 +13,11 @@ class LessonStore {
     return true;
   }
 
+  bool remove(int id) {
+    if (!_lessons.containsKey(id)) return false;
+    _lessons.remove(id);
+    return true;
+  }
+
   List<Lesson> get all => _lessons.values.toList()..sort();
 }
