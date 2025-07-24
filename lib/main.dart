@@ -2,11 +2,18 @@ import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import './models/lesson.dart';
 import './widgets/lesson_card.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(LessonAdapter());
+  await Hive.openBox<Lesson>('lessons');
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => LessonProvider(),

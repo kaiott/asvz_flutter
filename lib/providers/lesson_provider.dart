@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 
 class LessonProvider extends ChangeNotifier {
   final LessonStore _store = LessonStore();
-  final Map<int, Lesson> lessons = <int, Lesson>{};
+
+  LessonProvider() {
+    _store.init();
+  }
 
   bool addLesson(Lesson lesson) {
     final added = _store.add(lesson);

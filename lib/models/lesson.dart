@@ -1,16 +1,34 @@
-class Lesson implements Comparable<Lesson> {
+import 'package:hive/hive.dart';
+
+part 'lesson.g.dart';
+
+@HiveType(typeId: 0)
+class Lesson extends HiveObject implements Comparable<Lesson> {
+  @HiveField(0)
   final DateTime enrollmentFrom;
+  @HiveField(1)
   final DateTime enrollmentUntil;
+  @HiveField(2)
   final DateTime cancelationUntil;
+  @HiveField(3)
   final DateTime starts;
+  @HiveField(4)
   final DateTime ends;
+  @HiveField(5)
   final int participantsMax;
+  @HiveField(6)
   final int participantCount;
+  @HiveField(7)
   final List<String> instructors;
+  @HiveField(8)
   final String facility;
+  @HiveField(9)
   final String room;
+  @HiveField(10)
   final int id;
+  @HiveField(11)
   final String number;
+  @HiveField(12)
   final String sportName;
 
   Lesson({
