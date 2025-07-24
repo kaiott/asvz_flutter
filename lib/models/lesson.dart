@@ -48,7 +48,10 @@ class Lesson implements Comparable<Lesson> {
   }
   
   @override
-  int compareTo(Lesson other) => starts.compareTo(other.starts);
+  int compareTo(Lesson other) {
+    int res = starts.compareTo(other.starts);
+    return res != 0 ? res : id.compareTo(other.id);
+  }
 }
 
 final Map<String, dynamic> testJson = {
