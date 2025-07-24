@@ -1,4 +1,5 @@
 # Miscellaneous
+assets/credentials.json
 *.class
 *.log
 *.pyc

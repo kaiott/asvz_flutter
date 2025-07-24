@@ -65,6 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   SnackBar(content: Text('Lesson already added.')),
                 );
               }
+              final token = await updateAccessToken();
+              print(token);
               //setState(() {});
             } catch (e) {
               messenger.showSnackBar(
