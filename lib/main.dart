@@ -12,6 +12,7 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(LessonAdapter());
+  await Hive.deleteBoxFromDisk('lessons');
   await Hive.openBox<Lesson>('lessons');
   
   runApp(
@@ -65,8 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   SnackBar(content: Text('Lesson already added.')),
                 );
               }
-              final token = await updateAccessToken();
-              print(token);
+              //final token = await updateAccessToken();
+              //print(token);
               //setState(() {});
             } catch (e) {
               messenger.showSnackBar(
@@ -85,8 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         page = UpcomingPage(counter: _counter);
-      case 1 || 2 || 3:
+      case 1 || 3:
         page = Placeholder();
+      case 2:
+        page = InterestedPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -144,6 +147,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class InterestedPage extends StatelessWidget {
+  const InterestedPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    //final LessonProvider lessonProvider = LessonProvider();
+    List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
+    final children = [
+      for (final lesson in lessons) LessonCard(lesson: lesson),
+    ];
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      ),
+    );
+  }
+}
+
 class UpcomingPage extends StatelessWidget {
   const UpcomingPage({super.key, required int counter}) : _counter = counter;
 
@@ -152,7 +173,7 @@ class UpcomingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //final LessonProvider lessonProvider = LessonProvider();
-    List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
+    List<Lesson> lessons = context.watch<LessonProvider>().getManagedLessons();
     final children = [
       for (final lesson in lessons) LessonCard(lesson: lesson),
       Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),

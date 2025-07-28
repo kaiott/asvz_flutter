@@ -21,11 +21,20 @@ class LessonCard extends StatelessWidget {
               position.dy,
             )
           : const RelativeRect.fromLTRB(100, 100, 0, 0),
-      items: [const PopupMenuItem(value: 'delete', child: Text('Delete'))],
+      items: [!lesson.managed ? const PopupMenuItem(value: 'addToManaged', child: Text('Add to Managed')) : const PopupMenuItem(value: 'removeFromManaged', child: Text('Remove from Managed')), const PopupMenuItem(value: 'delete', child: Text('Delete'))],
     );
 
-    if (result == 'delete') {
-      lessonProvider.removeLesson(lesson);
+    switch (result) {
+      case 'delete':
+        lessonProvider.removeLesson(lesson);
+      case 'addToManaged':
+        lessonProvider.addToManaged(lesson);
+      case 'removeFromManaged':
+        lessonProvider.removeFromManaged(lesson);
+      case null:
+        break;
+      default:
+        throw UnimplementedError('no action for $result');
     }
   }
 

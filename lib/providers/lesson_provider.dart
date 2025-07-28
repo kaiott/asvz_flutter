@@ -21,5 +21,15 @@ class LessonProvider extends ChangeNotifier {
     return removed;
   }
 
+  void addToManaged(Lesson lesson) {
+    if (_store.changeManaged(lesson.id, true)) notifyListeners();
+  }
+
+  void removeFromManaged(Lesson lesson) {
+    if (_store.changeManaged(lesson.id, false)) notifyListeners();
+  }
+
   List<Lesson> getLessons() => _store.all;
+
+  List<Lesson> getManagedLessons() => _store.managed;
 }

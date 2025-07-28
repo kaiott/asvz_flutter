@@ -30,13 +30,13 @@ class LessonAdapter extends TypeAdapter<Lesson> {
       id: fields[10] as int,
       number: fields[11] as String,
       sportName: fields[12] as String,
-    );
+    )..managed = fields[13] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Lesson obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.enrollmentFrom)
       ..writeByte(1)
@@ -62,7 +62,9 @@ class LessonAdapter extends TypeAdapter<Lesson> {
       ..writeByte(11)
       ..write(obj.number)
       ..writeByte(12)
-      ..write(obj.sportName);
+      ..write(obj.sportName)
+      ..writeByte(13)
+      ..write(obj.managed);
   }
 
   @override

@@ -30,6 +30,8 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
   final String number;
   @HiveField(12)
   final String sportName;
+  @HiveField(13)
+  bool managed = false;
 
   Lesson({
     required this.enrollmentFrom,

@@ -24,7 +24,16 @@ class LessonStore {
     return true;
   }
 
+  bool changeManaged(int id, bool managed) {
+    final lesson = _box.get(id);
+    if (lesson == null) return false;
+    lesson.managed = managed;
+    lesson.save();
+    return true;
+  }
+
   List<Lesson> get all => _box.values.toList()..sort();
+  List<Lesson> get managed => _box.values.where((l) => l.managed).toList()..sort();
 
   void clear() => _box.clear();
 }
