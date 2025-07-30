@@ -2,6 +2,16 @@ import 'package:hive/hive.dart';
 
 part 'lesson.g.dart';
 
+enum LessonStatus {
+  none,
+  past,
+  enrolled,
+  beforeEnrollDate,
+  enrollmentAboutToBegin,
+  waitingForSpot,
+  enrollPeriodOver,
+}
+
 @HiveType(typeId: 0)
 class Lesson extends HiveObject implements Comparable<Lesson> {
   @HiveField(0)
@@ -32,6 +42,8 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
   final String sportName;
   @HiveField(13)
   bool managed = false;
+
+  LessonStatus status = LessonStatus.none;
 
   Lesson({
     required this.enrollmentFrom,

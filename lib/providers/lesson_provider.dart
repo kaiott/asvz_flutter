@@ -1,9 +1,11 @@
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:asvz_autosignup/services/lesson_store.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LessonProvider extends ChangeNotifier {
   final LessonStore _store = LessonStore();
+  String tokenStatus = 'No token';
 
   LessonProvider() {
     _store.init();
@@ -27,6 +29,16 @@ class LessonProvider extends ChangeNotifier {
 
   void removeFromManaged(Lesson lesson) {
     if (_store.changeManaged(lesson.id, false)) notifyListeners();
+  }
+
+  void setStatus(Lesson lesson, LessonStatus status) {
+    lesson.status = status;
+    notifyListeners();
+  }
+
+  void gotToken(String token, DateTime tokenAcquiredAt){
+    tokenStatus = 'Have token from ${DateFormat.yMEd().format(tokenAcquiredAt)}';
+    notifyListeners();
   }
 
   List<Lesson> getLessons() => _store.all;

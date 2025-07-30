@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:html/parser.dart' as html_parser;
-import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -23,7 +22,8 @@ const authHeaders = {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
 };
 
-Future<Lesson> fetchLesson(int id) async {
+Future<Map<String, dynamic>> fetchLessonRaw(int id) async {
+  //print('fetching lesson $id');
   final resourcePath = '/tn-api/api/Lessons/$id';
   final url = Uri.https(baseUrl, resourcePath);
   final response = await http.get(url);
@@ -33,9 +33,77 @@ Future<Lesson> fetchLesson(int id) async {
       uri: url,
     );
   }
-  final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+  return jsonDecode(response.body) as Map<String, dynamic>;
+}
+
+Future<Lesson> fetchLesson(int id) async {
+  final jsonResponse = await fetchLessonRaw(id);
   final lesson = Lesson.fromJson(jsonResponse["data"]);
   return lesson;
+}
+
+Future <int> fetchNumberOfFreeSpots(int id) async {
+  final jsonResponse = await fetchLessonRaw(id);
+  return jsonResponse["data"]["participantsMax"] - jsonResponse["data"]["participantCount"];
+}
+
+Future<bool> tryEnroll(int id, String token) async {
+  final resourcePath = '/tn-api/api/Lessons/$id/Enrollment';
+  final url = Uri.https(baseUrl, resourcePath);
+  final headers = {
+    'Host': 'schalter.asvz.ch',
+    'Connection': 'keep-alive',
+    'Accept': 'application/json, text/plain, */*',
+    'Authorization': 'Bearer $token',
+    'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    'Origin': 'https://schalter.asvz.ch',
+    'Referer': 'https://schalter.asvz.ch/tn/lessons/$id',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Content-Type': 'application/json',
+  };
+  print('before posting url');
+  http.post(url, headers: headers, body: '{}'); // this always times out. So we do even await it. Rather wait a bit after.
+  print('after posting url');
+  await Future.delayed(Duration(seconds: 5));
+  print('after 5 second delay');
+  return await isEnrolled(id, token);
+}
+
+Future<bool> isEnrolled(int id, String token) async {
+  final resourcePath = '/tn-api/api/Lessons/$id/MyEnrollment';
+  final url = Uri.https(baseUrl, resourcePath);
+  final headers = {
+    'Host': 'schalter.asvz.ch',
+    'Connection': 'keep-alive',
+    'Accept': 'application/json, text/plain, */*',
+    'Authorization': 'Bearer $token',
+    'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    'Origin': 'https://schalter.asvz.ch',
+    'Referer': 'https://schalter.asvz.ch/tn/lessons/$id',
+  };
+
+  final response = await http.get(url, headers: headers);
+  if (response.statusCode == 404) {
+    try {
+      final errorStatus = (jsonDecode(response.body) as Map<String, dynamic>)["errorStatus"];
+      if (errorStatus == 'RecordNotFound') return false;
+      throw Exception("Got weird error status $errorStatus");
+    } on Exception catch(e) {
+      throw Exception("Could not jsonify or find errorStatus in ${response.body}: ${e.toString()}");
+    }
+  } else if (response.statusCode == 200) {
+    try {
+      final status = (jsonDecode(response.body) as Map<String, dynamic>)["data"]["status"];
+      if (status == 4) return true;
+      if (status == 6) return false;
+      throw Exception('Got weird status $status');
+    } on Exception catch(e) {
+      throw Exception("Could not jsonify or find data.status in ${response.body}: ${e.toString()}");
+    }
+  } else {
+    throw Exception('Got unexpected status code ${response.statusCode}');
+  }
 }
 
 // Combine all cookie headers manually
@@ -174,11 +242,3 @@ Future<HttpClientResponse> _manualRedirectGet(Uri uri, Map<String, String> heade
   return response;
 }
 
-// String _combineCookies(List<String?>? headers) {
-//   final cookies = headers
-//       ?.whereType<String>()
-//       .expand((cookie) => cookie.split(','))
-//       .map((cookie) => cookie.split(';').first.trim())
-//       .toList();
-//   return cookies?.join('; ') ?? '';
-// }

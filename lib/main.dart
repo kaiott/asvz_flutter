@@ -1,5 +1,6 @@
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
+import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
 import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,9 +27,9 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    LessonAgentManager().injectProvider(context.read<LessonProvider>());
     return MaterialApp(
       title: 'ASVZ Auto Signup',
       theme: ThemeData(
@@ -46,7 +47,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   int selectedIndex = 0;
   //final lessonProvider = LessonProvider();
 
@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = UpcomingPage(counter: _counter);
+        page = UpcomingPage();
       case 1 || 3:
         page = Placeholder();
       case 2:
@@ -166,9 +166,7 @@ class InterestedPage extends StatelessWidget {
 }
 
 class UpcomingPage extends StatelessWidget {
-  const UpcomingPage({super.key, required int counter}) : _counter = counter;
-
-  final int _counter;
+  const UpcomingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +174,7 @@ class UpcomingPage extends StatelessWidget {
     List<Lesson> lessons = context.watch<LessonProvider>().getManagedLessons();
     final children = [
       for (final lesson in lessons) LessonCard(lesson: lesson),
-      Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
+      Text(context.watch<LessonProvider>().tokenStatus, style: Theme.of(context).textTheme.headlineMedium),
     ];
     return Center(
       child: Column(
