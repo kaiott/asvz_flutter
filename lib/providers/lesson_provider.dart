@@ -37,7 +37,7 @@ class LessonProvider extends ChangeNotifier {
   }
 
   void gotToken(String token, DateTime tokenAcquiredAt){
-    tokenStatus = 'Have token from ${DateFormat.yMEd().format(tokenAcquiredAt)}';
+    tokenStatus = 'Have token from ${DateFormat('HH:mm').format(tokenAcquiredAt)}';
     notifyListeners();
   }
 

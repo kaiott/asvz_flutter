@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/services/lesson_agent.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../models/lesson.dart';
 
 class LessonAgentManager {
   static final LessonAgentManager _instance = LessonAgentManager._internal();
   factory LessonAgentManager() => _instance;
-  LessonAgentManager._internal();
+  LessonAgentManager._internal() {start();}
 
   LessonProvider? _provider;
 
@@ -31,6 +31,8 @@ class LessonAgentManager {
 
   Future<void> start() async {
     while (true) {
+      print('needs token: $_needsToken');
+      if (isTokenValid) print('token acq: ${DateFormat('HH:mm'). format(_tokenAcquiredAt!)}');
       if (_needsToken) await _ensureToken();
       await Future.delayed(Duration(seconds: 60));
     }
