@@ -1,3 +1,4 @@
+import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import './models/lesson.dart';
-import './widgets/lesson_card.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         page = UpcomingPage();
       case 1 || 3:
-        page = Placeholder();
+        page = PastPage();
       case 2:
         page = InterestedPage();
       default:
@@ -147,40 +147,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class InterestedPage extends StatelessWidget {
-  const InterestedPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    //final LessonProvider lessonProvider = LessonProvider();
-    List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
-    final children = [
-      for (final lesson in lessons) LessonCard(lesson: lesson),
-    ];
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children,
-      ),
-    );
-  }
-}
-
-class UpcomingPage extends StatelessWidget {
-  const UpcomingPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    //final LessonProvider lessonProvider = LessonProvider();
-    List<Lesson> lessons = context.watch<LessonProvider>().getManagedLessons();
-    final children = [
-      for (final lesson in lessons) LessonCard(lesson: lesson),
-      Text(context.watch<LessonProvider>().tokenStatus, style: Theme.of(context).textTheme.headlineMedium),
-    ];
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children,
-      ),
-    );
-  }
-}
+// class InterestedPage extends StatelessWidget {
+//   const InterestedPage({super.key});
+//   @override
+//   Widget build(BuildContext context) {
+//     //final LessonProvider lessonProvider = LessonProvider();
+//     List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
+//     final children = [
+//       for (final lesson in lessons) LessonCard(lesson: lesson),
+//     ];
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: children,
+//       ),
+//     );
+//   }
+// }
