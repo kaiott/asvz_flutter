@@ -13,7 +13,7 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(LessonAdapter());
-  await Hive.deleteBoxFromDisk('lessons');
+  //await Hive.deleteBoxFromDisk('lessons');
   await Hive.openBox<Lesson>('lessons');
   
   runApp(
@@ -86,10 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         page = UpcomingPage();
-      case 1 || 3:
+      case 1:
         page = PastPage();
       case 2:
         page = InterestedPage();
+      case 3:
+        page = Placeholder();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
