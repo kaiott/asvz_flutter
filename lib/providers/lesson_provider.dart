@@ -44,4 +44,5 @@ class LessonProvider extends ChangeNotifier {
   List<Lesson> getLessons() => _store.all;
 
   List<Lesson> getManagedLessons() => _store.managed;
+  List<Lesson> getFilteredLessons(bool Function(Lesson) filter) => _store.filtered(filter);
 }

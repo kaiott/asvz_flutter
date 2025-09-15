@@ -84,6 +84,10 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
     int res = starts.compareTo(other.starts);
     return res != 0 ? res : id.compareTo(other.id);
   }
+
+  bool isPast() {
+    return DateTime.now().isAfter(ends);
+  }
 }
 
 final Map<String, dynamic> testJson = {

@@ -37,7 +37,8 @@ class LessonStore {
   }
 
   List<Lesson> get all => _box.values.toList()..sort();
-  List<Lesson> get managed => _box.values.where((l) => l.managed).toList()..sort();
+  List<Lesson> get managed => _box.values.where((l) => l.managed && !l.isPast()).toList()..sort();
+  List<Lesson> filtered(bool Function(Lesson) filter) => _box.values.where(filter).toList()..sort();
 
   void clear() => _box.clear();
 }
