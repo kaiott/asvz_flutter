@@ -92,6 +92,10 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
   bool isPast() {
     return DateTime.now().isAfter(ends);
   }
+
+  String get link {
+    return "https://schalter.asvz.ch/tn/lessons/${id}";
+  }
 }
 
 final Map<String, dynamic> testJson = {
