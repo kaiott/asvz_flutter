@@ -37,6 +37,7 @@ class _ScheduleViewState extends State<ScheduleView> {
           Expanded(
             flex: 1,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 for (final lesson in lessons)
                   GestureDetector(onTap: () => _onLessonSelected(lesson),
