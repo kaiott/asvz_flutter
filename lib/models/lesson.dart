@@ -41,6 +41,8 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
   @HiveField(12)
   final String sportName;
   @HiveField(13)
+  final String title;
+  @HiveField(14)
   bool managed = false;
 
   LessonStatus status = LessonStatus.none;
@@ -59,6 +61,7 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
     required this.id,
     required this.number,
     required this.sportName,
+    required this.title,
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
@@ -76,6 +79,7 @@ class Lesson extends HiveObject implements Comparable<Lesson> {
       id: json["id"],
       number: json["number"],
       sportName: json["sportName"],
+      title: json["title"],
     );
   }
   
