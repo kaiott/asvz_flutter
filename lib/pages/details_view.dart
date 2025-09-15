@@ -1,8 +1,6 @@
-import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailsView extends StatelessWidget {
@@ -19,7 +17,7 @@ class DetailsView extends StatelessWidget {
     final DateFormat dateFormat = DateFormat("EEE dd.MM.yyyy");
     final DateFormat timeFormat = DateFormat("HH:mm");
     const double iconSize = 24;
-    const double statusIconSize = 24;
+    //const double statusIconSize = 24;
 
     if (lesson == null) return SizedBox.shrink();
 
@@ -33,7 +31,7 @@ class DetailsView extends StatelessWidget {
           Center(
             child: Text(
               lesson!.sportName,
-              style: Theme.of(context).textTheme.displaySmall
+              style: Theme.of(context).textTheme.displaySmall,
             ),
           ),
           Center(
@@ -83,22 +81,25 @@ class DetailsView extends StatelessWidget {
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
-                onTap: () async {
-                  final url = Uri.parse(lesson!.link);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  } else {
-                    print('Could not launch $url');
-                  }
-                },
-                child: Text(
-                  lesson!.link,
-                  style: TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
+                  onTap: () async {
+                    final url = Uri.parse(lesson!.link);
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } else {
+                      print('Could not launch $url');
+                    }
+                  },
+                  child: Text(
+                    lesson!.link,
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
-                            ),
               ),
             ],
           ),

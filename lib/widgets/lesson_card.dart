@@ -123,33 +123,5 @@ class LessonCard extends StatelessWidget {
         ),
       ),
     );
-    // Card(
-    //         color: Theme.of(context).colorScheme.secondary,
-    //         child: Padding(
-    //           padding: const EdgeInsets.all(20.0),
-    //           child: Text(
-    //             'No lessons yet',
-    //             style: Theme.of(context).textTheme.displayMedium!.copyWith(
-    //               color: Theme.of(context).colorScheme.onSecondary,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    // return Card(
-    //   margin: const EdgeInsets.all(8),
-    //   child: Padding(
-    //     padding: const EdgeInsets.all(16),
-    //     child: Column(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: [
-    //         Text(lesson.title, style: Theme.of(context).textTheme.titleLarge),
-    //         const SizedBox(height: 8),
-    //         Text(lesson.description),
-    //         const SizedBox(height: 4),
-    //         Text("Location: ${lesson.location}", style: const TextStyle(fontStyle: FontStyle.italic)),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }
