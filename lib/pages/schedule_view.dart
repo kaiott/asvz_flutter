@@ -30,6 +30,9 @@ class _ScheduleViewState extends State<ScheduleView> {
     List<Lesson> lessons = context.watch<LessonProvider>().getFilteredLessons(widget.filter);
     // final children = [
     //   for (final lesson in lessons) LessonCard(lesson: lesson),
+    if (!lessons.contains(selected)) {
+      selected = null;
+    }
     // ];
     return Center(
       child: Row(

@@ -1,4 +1,6 @@
+import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/lesson.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +11,15 @@ class DetailsView extends StatelessWidget {
   const DetailsView({super.key, required this.lesson});
 
   void onChangeManagedPressed() {
+    print("Pressed the button...");
+  }
+
+  void onRemovePressed(BuildContext context, Lesson lesson) {
+    context.read<LessonProvider>().removeLesson(lesson);
+    print("Pressed the button...");
+  }
+
+  void onDebugPressed() {
     print("Pressed the button...");
   }
 
@@ -103,13 +114,60 @@ class DetailsView extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          // Row(
+          //   children: [
+          //     const Icon(Icons.event_repeat, size: iconSize),
+          //     const SizedBox(width: 8),
+          //     MouseRegion(
+          //       cursor: SystemMouseCursors.click,
+          //       child: GestureDetector(
+          //         onTap: () async {
+          //           final url = Uri.parse(lesson!.link);
+          //           if (await canLaunchUrl(url)) {
+          //             await launchUrl(
+          //               url,
+          //               mode: LaunchMode.externalApplication,
+          //             );
+          //           } else {
+          //             print('Could not launch $url');
+          //           }
+          //         },
+          //         child: Text(
+          //           lesson!.link,
+          //           style: TextStyle(
+          //             color: Colors.blue,
+          //             decoration: TextDecoration.underline,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           const SizedBox(height: 30),
           Center(
-            child: OutlinedButton(
-              onPressed: onChangeManagedPressed,
-              child: lesson!.managed
-                  ? Text("Remove from managed")
-                  : Text("Add to managed"),
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  OutlinedButton(
+                    onPressed: onChangeManagedPressed,
+                    child: lesson!.managed
+                        ? Text("Remove from managed")
+                        : Text("Add to managed"),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () => onRemovePressed(context, lesson!),
+                    child: Text("Remove"),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: onDebugPressed,
+                    child: Text("Debug btton"),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
