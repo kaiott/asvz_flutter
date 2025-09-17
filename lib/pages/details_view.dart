@@ -33,8 +33,9 @@ class DetailsView extends StatelessWidget {
     if (lesson == null) return SizedBox.shrink();
 
     return Container(
-      width: 320,
-      margin: const EdgeInsets.only(left: 24, right: 12, top: 36),
+      width: 360,
+      padding: const EdgeInsets.only(left: 24, right: 12, top: 36),
+      color: Theme.of(context).colorScheme.secondaryContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,

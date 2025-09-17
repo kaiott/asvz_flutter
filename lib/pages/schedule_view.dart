@@ -17,8 +17,12 @@ abstract class ScheduleView extends StatefulWidget {
 class _ScheduleViewState extends State<ScheduleView> {
   Lesson? selected;
 
-  void _onLessonSelected(Lesson lesson) {
-    print("selected lesson ${lesson.id}");
+  void _onLessonSelected(Lesson? lesson) {
+    if (lesson == null) {
+      print("deselected lesson");
+    } else {
+      print("selected lesson ${lesson.id}");
+    }
     setState(() {
       selected = lesson;
     });
@@ -27,7 +31,9 @@ class _ScheduleViewState extends State<ScheduleView> {
   @override
   Widget build(BuildContext context) {
     //final LessonProvider lessonProvider = LessonProvider();
-    List<Lesson> lessons = context.watch<LessonProvider>().getFilteredLessons(widget.filter);
+    List<Lesson> lessons = context.watch<LessonProvider>().getFilteredLessons(
+      widget.filter,
+    );
     // final children = [
     //   for (final lesson in lessons) LessonCard(lesson: lesson),
     if (!lessons.contains(selected)) {
@@ -39,13 +45,22 @@ class _ScheduleViewState extends State<ScheduleView> {
         children: [
           Expanded(
             flex: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (final lesson in lessons)
-                  GestureDetector(onTap: () => _onLessonSelected(lesson),
-                  child: LessonCard(lesson: lesson),)
-              ],
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque, // important!
+              onTap: () => _onLessonSelected(null),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (final lesson in lessons)
+                    GestureDetector(
+                      onTap: () => _onLessonSelected(lesson),
+                      child: LessonCard(
+                        lesson: lesson,
+                        selected: lesson == selected,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           DetailsView(lesson: selected),
@@ -59,19 +74,22 @@ class UpcomingPage extends ScheduleView {
   const UpcomingPage({super.key});
 
   @override
-  bool Function(Lesson) get filter => (l) => l.managed && !l.isPast();
+  bool Function(Lesson) get filter =>
+      (l) => l.managed && !l.isPast();
 }
 
 class PastPage extends ScheduleView {
   const PastPage({super.key});
 
   @override
-  bool Function(Lesson) get filter => (l) => l.isPast();
+  bool Function(Lesson) get filter =>
+      (l) => l.isPast();
 }
 
 class InterestedPage extends ScheduleView {
   const InterestedPage({super.key});
 
   @override
-  bool Function(Lesson) get filter => (l) => !l.isPast();
+  bool Function(Lesson) get filter =>
+      (l) => !l.isPast();
 }

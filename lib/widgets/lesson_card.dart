@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 
 class LessonCard extends StatelessWidget {
   final Lesson lesson;
+  final bool selected;
 
-  const LessonCard({super.key, required this.lesson});
+  const LessonCard({super.key, required this.lesson, this.selected=false});
 
   void _showContextMenu(BuildContext context, Offset? position) async {
     final lessonProvider = context.read<LessonProvider>();
@@ -53,7 +54,7 @@ class LessonCard extends StatelessWidget {
         _showContextMenu(context, null);
       },
       child: Card(
-        //color: Theme.of(context).colorScheme.secondaryContainer,
+        color: selected ? Theme.of(context).colorScheme.surfaceContainerHigh : null,
         elevation: 4,
         margin: const EdgeInsets.all(12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ASVZ Auto Signup',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
       ),
       home: const MyHomePage(),
     );
@@ -103,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               SafeArea(
                 child: NavigationRail(
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
                   extended: constraints.maxWidth >= 600,
                   destinations: [
                     NavigationRailDestination(
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Expanded(
                 child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: Theme.of(context).colorScheme.surface,
                   child: page,
                 ),
               ),
