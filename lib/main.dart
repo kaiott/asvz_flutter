@@ -1,8 +1,6 @@
 import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
-import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
-import 'package:asvz_autosignup/widgets/lesson_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -48,37 +46,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
-  //final lessonProvider = LessonProvider();
-
-  void _addButtonClicked() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return LessonInputDialog(
-          onSubmit: (lessonId) async {
-            final messenger = ScaffoldMessenger.of(context);
-            final lessonProvider = context.read<LessonProvider>();
-            try {
-              final lesson = await fetchLesson(lessonId);
-              final added = lessonProvider.addLesson(lesson);
-              if (!added) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text('Lesson already added.')),
-                );
-              }
-              //final token = await updateAccessToken();
-              //print(token);
-              //setState(() {});
-            } catch (e) {
-              messenger.showSnackBar(
-                SnackBar(content: Text('Failed to fetch lesson: $e')),
-              );
-            }
-          },
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: _addButtonClicked,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
           ),
         );
       },
