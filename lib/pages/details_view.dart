@@ -10,8 +10,12 @@ class DetailsView extends StatelessWidget {
 
   const DetailsView({super.key, required this.lesson});
 
-  void onChangeManagedPressed() {
-    print("Pressed the button...");
+  void onChangeManagedPressed(BuildContext context, Lesson lesson) {
+    if (lesson.managed) {
+      context.read<LessonProvider>().removeFromManaged(lesson);
+    } else {
+      context.read<LessonProvider>().addToManaged(lesson);
+    }
   }
 
   void onRemovePressed(BuildContext context, Lesson lesson) {
@@ -152,7 +156,7 @@ class DetailsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   OutlinedButton(
-                    onPressed: onChangeManagedPressed,
+                    onPressed: () => onChangeManagedPressed(context, lesson!),
                     child: lesson!.managed
                         ? Text("Remove from managed")
                         : Text("Add to managed"),
