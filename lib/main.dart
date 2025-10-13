@@ -1,5 +1,8 @@
 import 'package:asvz_autosignup/pages/schedule_view.dart';
+import 'package:asvz_autosignup/pages/token_view.dart';
 import 'package:asvz_autosignup/providers/lesson_provider.dart';
+import 'package:asvz_autosignup/providers/token_view_model.dart';
+import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,14 +12,24 @@ import './models/lesson.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // DataBase stuff
   await Hive.initFlutter();
   Hive.registerAdapter(LessonAdapter());
   //await Hive.deleteBoxFromDisk('lessons');
   await Hive.openBox<Lesson>('lessons');
-  
+
+  // Initialize services, repos etc
+  final tokenRepository = TokenRepository();
+  final lessonAgentManager = LessonAgentManager();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LessonProvider(),
+    MultiProvider(
+      providers: [
+        Provider<TokenRepository>(create: (_) => tokenRepository), // such that lower level UI elements have access if needed
+
+        ChangeNotifierProvider(create: (context) => LessonProvider()),
+        ChangeNotifierProvider(create: (context) => TokenViewModel(tokenRepository: tokenRepository)),
+      ],
       child: const MyApp(),
     ),
   );
@@ -58,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         page = InterestedPage();
       case 3:
-        page = Placeholder();
+        page = TokenView();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }

@@ -35,9 +35,6 @@ class _ScheduleViewState extends State<ScheduleView> {
                   SnackBar(content: Text('Lesson already added.')),
                 );
               }
-              //final token = await updateAccessToken();
-              //print(token);
-              //setState(() {});
             } catch (e) {
               messenger.showSnackBar(
                 SnackBar(content: Text('Failed to fetch lesson: $e')),

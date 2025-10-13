@@ -6,6 +6,13 @@ import 'package:intl/intl.dart';
 
 import '../models/lesson.dart';
 
+enum TokenStatus {
+  none,
+  valid,
+  expired,
+  acquiryFailed,
+}
+
 class LessonAgentManager {
   static final LessonAgentManager _instance = LessonAgentManager._internal();
   factory LessonAgentManager() => _instance;
@@ -25,6 +32,8 @@ class LessonAgentManager {
   // Token and timing
   String? _accessToken;
   DateTime? _tokenAcquiredAt;
+  String? _errorMessage;
+  TokenStatus _tokenStatus = TokenStatus.none;
 
   // LessonAgent tracking
   final Map<int, LessonAgent> _activeAgents = {};
@@ -32,7 +41,7 @@ class LessonAgentManager {
   Future<void> start() async {
     while (true) {
       print('needs token: $_needsToken');
-      if (isTokenValid) print('token acq: ${DateFormat('HH:mm'). format(_tokenAcquiredAt!)}');
+      checkTokenValid();
       if (_needsToken) await _ensureToken();
       await Future.delayed(Duration(seconds: 60));
     }
@@ -62,16 +71,30 @@ class LessonAgentManager {
     return _activeAgents.values.any((agent) => agent.needsToken());
   } // true if any agent needs token
 
-  bool get isTokenValid {
-    if (_tokenAcquiredAt != null) {
-      return DateTime.now().isBefore(_tokenAcquiredAt!.add(Duration(hours: 1, minutes: 55)));
+  /* check if status of token is still valid if it was valid (i.e. transition valid -> expired)
+  Any other token status update is handled by the _ensureToken function  */
+  bool checkTokenValid() {
+    if (_tokenStatus != TokenStatus.valid) return false;
+    // if status is valid, then _tokenAcquiredAt is guaranteed not null
+    if (DateTime.now().isAfter(_tokenAcquiredAt!.add(Duration(hours: 1, minutes: 55)))) {
+      _tokenStatus = TokenStatus.expired;
+      return false;
     }
-    return false;
+    print('token acq: ${DateFormat('HH:mm'). format(_tokenAcquiredAt!)}');
+    return true;
   }
 
   Future<void> _ensureToken() async {
-    if (!isTokenValid) {
-      _accessToken = await updateAccessToken();
+    if (!checkTokenValid()) {
+      try {
+        _accessToken = await updateAccessToken();
+        _errorMessage = null;
+        _tokenStatus = TokenStatus.valid;
+      } on Exception catch(e) {
+        _accessToken = null;
+        _errorMessage = e.toString();
+        _tokenStatus = TokenStatus.acquiryFailed;
+      }
       _tokenAcquiredAt = DateTime.now();
       print('Token refreshed at $_tokenAcquiredAt');
       _requireProvider.gotToken(_accessToken!, _tokenAcquiredAt!);
