@@ -76,9 +76,9 @@ class ScheduleView2 extends StatelessWidget {
                   ),
                 ),
                 floatingActionButton: FloatingActionButton(
-                  onPressed: () => _addButtonClicked(context),
-                  tooltip: 'Add',
-                  child: const Icon(Icons.add),
+                  onPressed: () => vm.onFABClicked(context),
+                  tooltip: vm.fabTooptip,
+                  child: vm.fabIcon,
                 ),
               ),
             ),

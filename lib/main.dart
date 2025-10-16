@@ -7,6 +7,7 @@ import 'package:asvz_autosignup/providers/token_view_model.dart';
 import 'package:asvz_autosignup/repositories/lesson_repository.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
+import 'package:asvz_autosignup/services/lesson_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -20,11 +21,12 @@ void main() async {
   Hive.registerAdapter(LessonAdapter());
   //await Hive.deleteBoxFromDisk('lessons');
   await Hive.openBox<Lesson>('lessons');
+  final LessonDatabaseService lessonDatabaseService = await HiveLessonDatabaseService.create();
 
   // Initialize services, repos etc
   final tokenRepository = TokenRepository();
   final lessonAgentManager = LessonAgentManager();
-  final lessonRepository = LessonRepository(tokenRepository: tokenRepository);
+  final lessonRepository = LessonRepository(tokenRepository: tokenRepository, lessonDatabaseService: lessonDatabaseService);
 
   runApp(
     MultiProvider(
@@ -80,13 +82,25 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = UpcomingPage();
-      case 1:
-        page = PastPage();
-      case 2:
-        //page = InterestedPage();
         page = ChangeNotifierProvider<ScheduleViewModel>(
-          create: (context) => ScheduleViewModel(
+          key: ValueKey(selectedIndex),
+          create: (context) => FutureScheduleViewModel(
+            lessonRepository: context.read<LessonRepository>(),
+          ),
+          child: ScheduleView2(),
+        );
+      case 1:
+        page = ChangeNotifierProvider<ScheduleViewModel>(
+          key: ValueKey(selectedIndex),
+          create: (context) => ManagedScheduleViewModel(
+            lessonRepository: context.read<LessonRepository>(),
+          ),
+          child: ScheduleView2(),
+        );
+      case 2:
+        page = ChangeNotifierProvider<ScheduleViewModel>(
+          key: ValueKey(selectedIndex),
+          create: (context) => PastScheduleViewModel(
             lessonRepository: context.read<LessonRepository>(),
           ),
           child: ScheduleView2(),
@@ -110,16 +124,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   extended: constraints.maxWidth >= 600,
                   destinations: [
                     NavigationRailDestination(
+                      icon: Icon(Icons.favorite),
+                      label: Text('Interested'),
+                    ),
+                    NavigationRailDestination(
                       icon: Icon(Icons.arrow_circle_right),
-                      label: Text('Upcoming'),
+                      label: Text('Managed'),
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.arrow_circle_left_outlined),
                       label: Text('Past'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Interested'),
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.assignment),
