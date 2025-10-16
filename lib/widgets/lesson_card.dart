@@ -1,4 +1,3 @@
-import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import 'package:intl/intl.dart';
@@ -11,32 +10,32 @@ class LessonCard extends StatelessWidget {
   const LessonCard({super.key, required this.lesson, this.selected=false});
 
   void _showContextMenu(BuildContext context, Offset? position) async {
-    final lessonProvider = context.read<LessonProvider>();
-    final result = await showMenu(
-      context: context,
-      position: position != null
-          ? RelativeRect.fromLTRB(
-              position.dx,
-              position.dy,
-              position.dx,
-              position.dy,
-            )
-          : const RelativeRect.fromLTRB(100, 100, 0, 0),
-      items: [!lesson.managed ? const PopupMenuItem(value: 'addToManaged', child: Text('Add to Managed')) : const PopupMenuItem(value: 'removeFromManaged', child: Text('Remove from Managed')), const PopupMenuItem(value: 'delete', child: Text('Delete'))],
-    );
+    // final lessonProvider = context.read<LessonProvider>();
+    // final result = await showMenu(
+    //   context: context,
+    //   position: position != null
+    //       ? RelativeRect.fromLTRB(
+    //           position.dx,
+    //           position.dy,
+    //           position.dx,
+    //           position.dy,
+    //         )
+    //       : const RelativeRect.fromLTRB(100, 100, 0, 0),
+    //   items: [!lesson.managed ? const PopupMenuItem(value: 'addToManaged', child: Text('Add to Managed')) : const PopupMenuItem(value: 'removeFromManaged', child: Text('Remove from Managed')), const PopupMenuItem(value: 'delete', child: Text('Delete'))],
+    // );
 
-    switch (result) {
-      case 'delete':
-        lessonProvider.removeLesson(lesson);
-      case 'addToManaged':
-        lessonProvider.addToManaged(lesson);
-      case 'removeFromManaged':
-        lessonProvider.removeFromManaged(lesson);
-      case null:
-        break;
-      default:
-        throw UnimplementedError('no action for $result');
-    }
+    // switch (result) {
+    //   case 'delete':
+    //     lessonProvider.removeLesson(lesson);
+    //   case 'addToManaged':
+    //     lessonProvider.addToManaged(lesson);
+    //   case 'removeFromManaged':
+    //     lessonProvider.removeFromManaged(lesson);
+    //   case null:
+    //     break;
+    //   default:
+    //     throw UnimplementedError('no action for $result');
+    // }
   }
 
   @override

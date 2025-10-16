@@ -1,12 +1,9 @@
-import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/pages/schedule_view2.dart';
 import 'package:asvz_autosignup/pages/token_view.dart';
-import 'package:asvz_autosignup/providers/lesson_provider.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
 import 'package:asvz_autosignup/providers/token_view_model.dart';
 import 'package:asvz_autosignup/repositories/lesson_repository.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
-import 'package:asvz_autosignup/services/lesson_agent_manager.dart';
 import 'package:asvz_autosignup/services/lesson_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -25,7 +22,6 @@ void main() async {
 
   // Initialize services, repos etc
   final tokenRepository = TokenRepository();
-  final lessonAgentManager = LessonAgentManager();
   final lessonRepository = LessonRepository(tokenRepository: tokenRepository, lessonDatabaseService: lessonDatabaseService);
 
   runApp(
@@ -34,12 +30,8 @@ void main() async {
         Provider<TokenRepository>(
           create: (_) => tokenRepository,
         ), // such that lower level UI elements have access if needed
-        Provider<LessonAgentManager>(create: (_) => lessonAgentManager),
 
         ChangeNotifierProvider<LessonRepository>(create: (context) => lessonRepository),
-        ChangeNotifierProvider<LessonProvider>(
-          create: (context) => LessonProvider(),
-        ),
         ChangeNotifierProvider<TokenViewModel>(
           create: (context) => TokenViewModel(tokenRepository: tokenRepository),
         ),
@@ -54,10 +46,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<LessonAgentManager>(
-      context,
-      listen: false,
-    ).injectProvider(context.read<LessonProvider>());
     return MaterialApp(
       title: 'ASVZ Auto Signup',
       theme: ThemeData(
