@@ -1,4 +1,4 @@
-import 'package:asvz_autosignup/pages/schedule_view2.dart';
+import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/pages/token_view.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
 import 'package:asvz_autosignup/providers/token_view_model.dart';
@@ -13,25 +13,25 @@ import './models/lesson.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // DataBase stuff
+  // Init Hive stuff (for HiveLessonDatabaseService implementation of LessonDatabaseService)
   await Hive.initFlutter();
   Hive.registerAdapter(LessonAdapter());
-  //await Hive.deleteBoxFromDisk('lessons');
   await Hive.openBox<Lesson>('lessons');
-  final LessonDatabaseService lessonDatabaseService = await HiveLessonDatabaseService.create();
 
   // Initialize services, repos etc
+  final LessonDatabaseService lessonDatabaseService =
+      await HiveLessonDatabaseService.create();
   final tokenRepository = TokenRepository();
-  final lessonRepository = LessonRepository(tokenRepository: tokenRepository, lessonDatabaseService: lessonDatabaseService);
+  final lessonRepository = LessonRepository(
+    tokenRepository: tokenRepository,
+    lessonDatabaseService: lessonDatabaseService,
+  );
 
   runApp(
     MultiProvider(
       providers: [
-        Provider<TokenRepository>(
-          create: (_) => tokenRepository,
-        ), // such that lower level UI elements have access if needed
-
-        ChangeNotifierProvider<LessonRepository>(create: (context) => lessonRepository),
+        Provider<TokenRepository>(create: (context) => tokenRepository),
+        Provider<LessonRepository>(create: (context) => lessonRepository),
         ChangeNotifierProvider<TokenViewModel>(
           create: (context) => TokenViewModel(tokenRepository: tokenRepository),
         ),
@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
           create: (context) => FutureScheduleViewModel(
             lessonRepository: context.read<LessonRepository>(),
           ),
-          child: ScheduleView2(),
+          child: ScheduleView(),
         );
       case 1:
         page = ChangeNotifierProvider<ScheduleViewModel>(
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
           create: (context) => ManagedScheduleViewModel(
             lessonRepository: context.read<LessonRepository>(),
           ),
-          child: ScheduleView2(),
+          child: ScheduleView(),
         );
       case 2:
         page = ChangeNotifierProvider<ScheduleViewModel>(
@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
           create: (context) => PastScheduleViewModel(
             lessonRepository: context.read<LessonRepository>(),
           ),
-          child: ScheduleView2(),
+          child: ScheduleView(),
         );
       case 3:
         page = TokenView();
@@ -149,21 +149,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-// class InterestedPage extends StatelessWidget {
-//   const InterestedPage({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     //final LessonProvider lessonProvider = LessonProvider();
-//     List<Lesson> lessons = context.watch<LessonProvider>().getLessons();
-//     final children = [
-//       for (final lesson in lessons) LessonCard(lesson: lesson),
-//     ];
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: children,
-//       ),
-//     );
-//   }
-// }

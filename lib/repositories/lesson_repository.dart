@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
-import 'package:asvz_autosignup/services/lesson_agent2.dart';
+import 'package:asvz_autosignup/services/lesson_agent.dart';
 import 'package:asvz_autosignup/services/lesson_database_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -19,7 +19,7 @@ class LessonRepository with ChangeNotifier {
       _lessons.values.where(filter).toList()..sort();
 
   // LessonAgent tracking
-  final Map<int, LessonAgent2> _activeAgents = {};
+  final Map<int, LessonAgent> _activeAgents = {};
 
   LessonRepository({required this.tokenRepository, required this.lessonDatabaseService}) {
     tokenRepository.tokenStatusListenable.addListener(_onTokenStatusChanged);
@@ -48,7 +48,7 @@ class LessonRepository with ChangeNotifier {
     lesson.managed = true;
     _activeAgents.putIfAbsent(
       lesson.id,
-      () => LessonAgent2(
+      () => LessonAgent(
         lesson: lesson,
         lessonRepository: this,
         tokenRepository: tokenRepository,
