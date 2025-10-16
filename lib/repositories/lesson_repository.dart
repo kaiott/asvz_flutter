@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:asvz_autosignup/services/lesson_agent2.dart';
+import 'package:asvz_autosignup/services/lesson_database_service.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonRepository with ChangeNotifier {
   final TokenRepository tokenRepository;
+  final LessonDatabaseService lessonDatabaseService;
   late final Map<int, Lesson> _lessons;
 
   // public getters
@@ -19,15 +21,15 @@ class LessonRepository with ChangeNotifier {
   // LessonAgent tracking
   final Map<int, LessonAgent2> _activeAgents = {};
 
-  LessonRepository({required this.tokenRepository}) {
+  LessonRepository({required this.tokenRepository, required this.lessonDatabaseService}) {
     tokenRepository.tokenStatusListenable.addListener(_onTokenStatusChanged);
-    _lessons = <int, Lesson>{}; // Todo: load from persistent storage
+    _lessons = lessonDatabaseService.loadAll(); // Load lessons from database
   }
 
   bool add(Lesson lesson) {
     if (_lessons.containsKey(lesson.id)) return false;
     _lessons[lesson.id] = lesson;
-    // TODO: Make persistent
+    lessonDatabaseService.save(lesson);
     notifyListeners();
     return true;
   }
@@ -36,7 +38,7 @@ class LessonRepository with ChangeNotifier {
     if (!_lessons.containsKey(lesson.id)) return false;
     _killAgent(lesson);
     _lessons.remove(lesson.id);
-    // TODO: Make persistent
+    lessonDatabaseService.delete(lesson);
     notifyListeners();
     return true;
   }
@@ -52,7 +54,7 @@ class LessonRepository with ChangeNotifier {
         tokenRepository: tokenRepository,
       ),
     );
-    // TODO: Make persistent
+    lessonDatabaseService.save(lesson);
     notifyListeners();
     return true;
   }
@@ -61,7 +63,7 @@ class LessonRepository with ChangeNotifier {
     if (!_lessons.containsKey(lesson.id) || !lesson.managed) return false;
     lesson.managed = false;
     _killAgent(lesson);
-    // TODO: Make persistent
+    lessonDatabaseService.save(lesson);
     notifyListeners();
     return true;
   }
