@@ -24,6 +24,12 @@ class LessonRepository with ChangeNotifier {
   LessonRepository({required this.tokenRepository, required this.lessonDatabaseService}) {
     tokenRepository.tokenStatusListenable.addListener(_onTokenStatusChanged);
     _lessons = lessonDatabaseService.loadAll(); // Load lessons from database
+    for (Lesson lesson in _lessons.values) {
+      if (lesson.managed) {
+        lesson.managed = false; // prevent short-circuit return
+        addToManaged(lesson);
+      }
+    }
   }
 
   bool add(Lesson lesson) {
