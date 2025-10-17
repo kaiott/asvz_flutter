@@ -1,4 +1,5 @@
 import 'package:asvz_autosignup/pages/lesson_details_view.dart';
+import 'package:asvz_autosignup/providers/lesson_card_view_model.dart';
 import 'package:asvz_autosignup/providers/lesson_details_view_model.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
 import 'package:asvz_autosignup/repositories/lesson_repository.dart';
@@ -31,9 +32,15 @@ class ScheduleView extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => vm.select(lesson),
-                                child: LessonCard(
-                                  lesson: lesson,
-                                  selected: lesson == vm.selected,
+                                child: Provider<LessonCardViewModel>.value(
+                                  value: LessonCardViewModel(
+                                    lessonRepository: context
+                                        .read<LessonRepository>(),
+                                    lesson: lesson,
+                                  ),
+                                  child: LessonCard(
+                                    selected: lesson == vm.selected,
+                                  ),
                                 ),
                               ),
                             ],
