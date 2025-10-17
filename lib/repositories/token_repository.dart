@@ -28,7 +28,7 @@ class TokenRepository {
   }
 
   /* Token expires after 2 hours. Force a refresh a bit earlier. */
-  DateTime? get _tokenExpiresAt =>
+  DateTime? get tokenExpiresAt =>
       _tokenAcquiredAt?.add(Duration(hours: 1, minutes: 55));
 
   Future<void> _refreshToken() async {
@@ -55,8 +55,8 @@ class TokenRepository {
     await Future.delayed(duration.isNegative ? Duration.zero : duration);
   }
 
-  Future<void> expiryTimer() async {
-    await waitUntil(_tokenExpiresAt!);
+  Future<void> expiryTimer() async { // problem with this. If device (at least windows) sleeps, the timer fires early.
+    await waitUntil(tokenExpiresAt!);
     checkTokenValid();
   }
 
@@ -83,14 +83,16 @@ class TokenRepository {
   /* check if status of token is still valid if it was valid (i.e. transition valid -> expired)
   Any other token status update is handled by the _ensureToken function  */
   bool checkTokenValid() {
+    print('check token status (now $status)');
     if (status != TokenStatus.valid) return false;
     // if status is valid, then _tokenAcquiredAt is guaranteed not null
-    if (DateTime.now().isAfter(_tokenExpiresAt!)) {
+    if (DateTime.now().isAfter(tokenExpiresAt!)) {
+      print('after expiry data, changing to expired.');
       _setStatus(TokenStatus.expired);
       return false;
     }
     print(
-      'Valid token acq at: ${DateFormat('HH:mm').format(_tokenAcquiredAt!)}',
+      'Valid token acq at: ${DateFormat('HH:mm:ss').format(_tokenAcquiredAt!)}. Expries at ${DateFormat('HH:mm:ss').format(tokenExpiresAt!)}. Now is ${DateFormat('HH:mm:ss').format(DateTime.now())}',
     );
     return true;
   }

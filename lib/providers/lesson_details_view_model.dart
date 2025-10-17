@@ -18,7 +18,7 @@ class LessonDetailsViewModel {
   String get status => lesson.status.name;
   String get time =>
       "${dateFormat.format(lesson.starts)}\n${timeFormat.format(lesson.starts)} - ${timeFormat.format(lesson.ends)}";
-  String get place => "${lesson.facility}\n${lesson.room}";
+  String get location => "${lesson.facility}\n${lesson.room}";
   String get instructors => lesson.instructors.join(", ");
   String get link => lesson.link;
   Uri get uri => Uri.parse(link);

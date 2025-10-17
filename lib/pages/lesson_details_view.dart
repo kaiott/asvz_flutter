@@ -51,7 +51,7 @@ class LessonDetailsView extends StatelessWidget {
               children: [
                 const Icon(Icons.place, size: iconSize),
                 const SizedBox(width: 8),
-                Text(vm.place),
+                Text(vm.location),
               ],
             ),
             const SizedBox(height: 8),

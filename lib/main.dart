@@ -31,7 +31,7 @@ void main() async {
     MultiProvider(
       providers: [
         Provider<TokenRepository>(create: (context) => tokenRepository),
-        Provider<LessonRepository>(create: (context) => lessonRepository),
+        ChangeNotifierProvider<LessonRepository>(create: (context) => lessonRepository),
         ChangeNotifierProvider<TokenViewModel>(
           create: (context) => TokenViewModel(tokenRepository: tokenRepository),
         ),

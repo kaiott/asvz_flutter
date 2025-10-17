@@ -32,12 +32,11 @@ class TokenViewModel extends ChangeNotifier {
     if (tokenRepository.tokenAcquiredAt == null) {
       return 'No refresh yet';
     }
-    return 'Last refreshed at ${DateFormat('HH:mm, dd.MM.yy').format(tokenRepository.tokenAcquiredAt!)}';
+    return 'Last refreshed at ${DateFormat('HH:mm:ss, dd.MM.yy').format(tokenRepository.tokenAcquiredAt!)}';
   }
 
   void onRefreshButtonClicked() {
     unawaited(tokenRepository.refreshToken());
-    print('lcicked button');
   }
 
   void onTokenStatusChanged() {
