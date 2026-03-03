@@ -45,25 +45,26 @@ This Flutter app helps users automatically enroll in university sports lessons a
    - Enable agents to run even when the app is in the background or closed (especially on Android).
    - Likely involves `android_foreground_service` or `flutter_background`.
 
-4. **User interface improvements**:
+4. **Manual status refresh**:
+   - A refresh action that re-checks the true enrollment status of all managed lessons from the ASVZ API.
+   - Can be implemented by killing and restarting all active agents (effectively "forgetting" stale status).
+
+5. **User interface improvements**:
    - Ability to export/import lesson data as JSON.
    - The "Option" button in the detail panel is a placeholder with no functionality yet.
    - The "Log" tab currently shows only token status, not a proper event log.
-
-5. **Improved state flow**:
-   - `LessonDetailsViewModel` is not a `ChangeNotifier`, so the detail panel does not auto-refresh when a lesson's status changes. This needs to be fixed.
 
 ## 🐛 Known Bugs
 
 - **Device sleep breaks the expiry timer**: `expiryTimer()` uses `Future.delayed`, which may fire early if the device sleeps. This can cause premature token expiry detection.
 - **`tryEnroll` POST is fire-and-forget**: The enrollment POST request always times out, so it is intentionally not awaited. Instead, enrollment success is checked via a separate GET after a 5-second delay. This is fragile.
-- **Agent status reset on startup**: `LessonStatus` is not persisted, so agents restart from scratch (e.g. `beforeEnrollDate`) even if they had previously reached a later state.
 
 ## 🧩 Notes
 
 - The entire app runs locally with no backend.
 - UI communicates with `LessonRepository`, which abstracts storage and agent logic.
 - Agents use `Future.delayed`-based loops instead of threads.
+- `LessonStatus` is intentionally not persisted. The true enrollment status can change externally (e.g. manually unenrolling on the ASVZ website), so persisting it would risk showing stale state. On startup, status is treated as unknown and agents re-derive it. The trade-off is that status may also drift while the app is running, which a future manual refresh feature would address.
 
 ## Flutter cheatsheet
 `dart run build_runner build --delete-conflicting-outputs` recreates lesson.g.dart if model Lesson is updated with fields.
