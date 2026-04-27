@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart' show rootBundle;
 
 const String baseUrl = 'schalter.asvz.ch';
 
@@ -113,7 +112,7 @@ String getCookiesFromSetCookieHeaders(List<String> setCookies) {
       .join('; ');
 }
 
-Future<String> updateAccessToken() async {
+Future<String> updateAccessToken(Map<String, String> credentials) async {
   final client = http.Client();
 
   try {
@@ -134,12 +133,7 @@ Future<String> updateAccessToken() async {
     final antiforgeryCookie = _extractCookieFromString(loginResponse.headers["set-cookie"] ?? '', ".AspNetCore.Antiforgery.MkeJ4WI3ssE");
     if (antiforgeryCookie == null) throw Exception("Missing .AspNetCore.Antiforgery.MkeJ4WI3ssE cookie");
 
-    // Step 4: Read credentials
-    final credentialsJson = await rootBundle.loadString(
-      'assets/credentials.json',
-    );
-    final credentials = jsonDecode(credentialsJson);
-
+    // Step 4: Create form data with credentials and csrftoken
     final formData = {
       "AsvzId": credentials["username"],
       "Password": credentials["password"],
@@ -152,8 +146,6 @@ Future<String> updateAccessToken() async {
       headers: {...loginHeaders, 'Cookie': antiforgeryCookie},
       body: formData,
     );
-    //print(postLoginResponse.statusCode);
-    //print(postLoginResponse.headers);
 
     if (postLoginResponse.statusCode != 302) {
       throw Exception(
@@ -220,13 +212,6 @@ String? _extractCookieFromString(String cookieHeader, String cookieNameStart) {
 
   return null;
 }
-
-// String _extractAntiforgeryCookie(String cookieHeader) {
-//   final match = RegExp(
-//     r'(\.AspNetCore\.Antiforgery\.[^=]+=[^;]+)',
-//   ).firstMatch(cookieHeader);
-//   return match != null ? match.group(1)! : '';
-// }
 
 Future<HttpClientResponse> _manualRedirectGet(Uri uri, Map<String, String> headers) async {
   final client = HttpClient();

@@ -2,6 +2,7 @@ import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/pages/token_view.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
 import 'package:asvz_autosignup/providers/token_view_model.dart';
+import 'package:asvz_autosignup/repositories/credentials_repository.dart';
 import 'package:asvz_autosignup/repositories/lesson_repository.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:asvz_autosignup/services/lesson_database_service.dart';
@@ -21,11 +22,15 @@ void main() async {
   // Initialize services, repos etc
   final LessonDatabaseService lessonDatabaseService =
       await HiveLessonDatabaseService.create();
-  final tokenRepository = TokenRepository();
+  final credentialsRepository = CredentialsRepository();
+  await credentialsRepository.checkCredentials();
+  final tokenRepository = TokenRepository(credentialsRepository: credentialsRepository);
   final lessonRepository = LessonRepository(
     tokenRepository: tokenRepository,
     lessonDatabaseService: lessonDatabaseService,
   );
+
+  // TODO: if credentialsRepository.status is none or invalid, delete database and show login screen, otherwise continue as usual
 
   runApp(
     MultiProvider(

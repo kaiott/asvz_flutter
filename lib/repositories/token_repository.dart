@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:asvz_autosignup/repositories/credentials_repository.dart';
 import 'package:asvz_autosignup/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
@@ -7,12 +8,15 @@ import 'package:intl/intl.dart';
 enum TokenStatus { none, refreshing, valid, expired, error }
 
 class TokenRepository {
+  final CredentialsRepository credentialsRepository;
 
   // Private attributes
   final ValueNotifier<TokenStatus> _statusNotifier = ValueNotifier<TokenStatus>(TokenStatus.none);
   String? _token;
   DateTime? _tokenAcquiredAt;
   String? _errorMessage;
+
+  TokenRepository({required this.credentialsRepository});
 
   // Public getters
   ValueListenable<TokenStatus> get tokenStatusListenable => _statusNotifier;
@@ -34,7 +38,7 @@ class TokenRepository {
   Future<void> _refreshToken() async {
     _setStatus(TokenStatus.refreshing);
     try {
-      _token = await updateAccessToken();
+      _token = await updateAccessToken(credentialsRepository.credentials);
       _errorMessage = null;
       _tokenAcquiredAt = DateTime.now();
       unawaited(expiryTimer());
