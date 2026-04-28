@@ -5,15 +5,17 @@ import 'package:flutter/services.dart' show rootBundle;
 
 enum CredentialStatus {none, signedIn, invalid}
 
-class CredentialsRepository {
+class CredentialsRepository with ChangeNotifier{
   
   // Private attributes
   final ValueNotifier<CredentialStatus> _statusNotifier = ValueNotifier<CredentialStatus>(CredentialStatus.none);
+  // Future reference: Map<String, String>? _credentials;
   String? _username;
   String? _password;
 
   void _setStatus(CredentialStatus status) {
     _statusNotifier.value = status;
+    notifyListeners();
   }
 
   Future<void> checkCredentials() async {
@@ -45,6 +47,12 @@ class CredentialsRepository {
     credentials["username"] = _username!;
     credentials["password"] = _password!;
     return credentials;
+  }
+
+  Future<bool> setCredentials(String username, String password) async {
+    // TODo: save credentials and check if they are valid
+    print("Checking credentials $username, $password ...");
+    return true;
   }
 
   void logOut() {

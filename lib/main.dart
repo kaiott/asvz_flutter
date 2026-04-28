@@ -1,3 +1,4 @@
+import 'package:asvz_autosignup/pages/login_view.dart';
 import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/pages/token_view.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
@@ -24,19 +25,26 @@ void main() async {
       await HiveLessonDatabaseService.create();
   final credentialsRepository = CredentialsRepository();
   await credentialsRepository.checkCredentials();
-  final tokenRepository = TokenRepository(credentialsRepository: credentialsRepository);
+  final tokenRepository = TokenRepository(
+    credentialsRepository: credentialsRepository,
+  );
   final lessonRepository = LessonRepository(
     tokenRepository: tokenRepository,
     lessonDatabaseService: lessonDatabaseService,
   );
 
-  // TODO: if credentialsRepository.status is none or invalid, delete database and show login screen, otherwise continue as usual
+  // TODO: if credentialsRepository.status is none or invalid, delete database
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider<CredentialsRepository>(
+          create: (context) => credentialsRepository,
+        ),
         Provider<TokenRepository>(create: (context) => tokenRepository),
-        ChangeNotifierProvider<LessonRepository>(create: (context) => lessonRepository),
+        ChangeNotifierProvider<LessonRepository>(
+          create: (context) => lessonRepository,
+        ),
         ChangeNotifierProvider<TokenViewModel>(
           create: (context) => TokenViewModel(tokenRepository: tokenRepository),
         ),
@@ -44,6 +52,21 @@ void main() async {
       child: const MyApp(),
     ),
   );
+}
+
+class Root extends StatelessWidget {
+  const Root({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    CredentialsRepository credentialsRepository = context
+        .read<CredentialsRepository>();
+    return credentialsRepository.status == CredentialStatus.none
+        ? LoginView(credentialsRepository: credentialsRepository, failed: false)
+        : credentialsRepository.status == CredentialStatus.invalid
+        ? LoginView(credentialsRepository: credentialsRepository, failed: true)
+        : const MyHomePage();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -56,7 +79,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
       ),
-      home: const MyHomePage(),
+      home: const Root(),
     );
   }
 }
