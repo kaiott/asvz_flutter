@@ -10,6 +10,7 @@ enum LessonStatus {
   enrollmentAboutToBegin,
   waitingForSpot,
   enrollPeriodOver,
+  unknown,
 }
 
 @HiveType(typeId: 0)

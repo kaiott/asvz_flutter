@@ -1,15 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum CredentialStatus {none, signedIn, invalid}
 
 class CredentialsRepository with ChangeNotifier{
+  static const _storage = FlutterSecureStorage();
+  static const _usernameKey = 'asvz_username';
+  static const _passwordKey = 'asvz_password';
   
-  // Private attributes
   final ValueNotifier<CredentialStatus> _statusNotifier = ValueNotifier<CredentialStatus>(CredentialStatus.none);
-  // Future reference: Map<String, String>? _credentials;
   String? _username;
   String? _password;
 
@@ -19,15 +18,14 @@ class CredentialsRepository with ChangeNotifier{
   }
 
   Future<void> checkCredentials() async {
-    //TODO: switch to flutter_secure_storage
-    final credentialsJson = await rootBundle.loadString(
-      'assets/credentials.json',
-    );
-    final credentials = jsonDecode(credentialsJson);
-    _username = credentials["username"];
-    _password = credentials["password"];
-
-    // TODO: if not available set (or keep) status to none
+    final username = await _storage.read(key: _usernameKey);
+    final password = await _storage.read(key: _passwordKey);
+    if (username == null || password == null) {
+      _setStatus(CredentialStatus.none);
+      return;
+    }
+    _username = username;
+    _password = password;
 
     // TODO: validity check of credentials
 
@@ -43,27 +41,23 @@ class CredentialsRepository with ChangeNotifier{
     if (status == CredentialStatus.none) {
       throw Exception("Asked for credentials without signedIn State.");
     }
-    Map<String, String> credentials = {};
-    credentials["username"] = _username!;
-    credentials["password"] = _password!;
-    return credentials;
+    return {'username': _username!, 'password': _password!};
   }
 
-  Future<bool> setCredentials(String username, String password) async {
-    // TODo: save credentials and check if they are valid
-    print("Checking credentials $username, $password ...");
-    return true;
+  Future<void> setCredentials(String username, String password) async {
+    // TODo: check if they are valid
+    await _storage.write(key: _usernameKey, value: username);
+    await _storage.write(key: _passwordKey, value: password);
+    _username = username;
+    _password = password;
+    _setStatus(CredentialStatus.signedIn);
   }
 
-  void logOut() {
+  Future<void> logOut() async {
+    await _storage.delete(key: _usernameKey);
+    await _storage.delete(key: _passwordKey);
     _username = null;
     _password = null;
-    //TODO: delete credentials from storage
     _setStatus(CredentialStatus.none);
   }
-
-
-
-
-
 }

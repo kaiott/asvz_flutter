@@ -46,7 +46,10 @@ void main() async {
           create: (context) => lessonRepository,
         ),
         ChangeNotifierProvider<TokenViewModel>(
-          create: (context) => TokenViewModel(tokenRepository: tokenRepository),
+          create: (context) => TokenViewModel(
+            tokenRepository: tokenRepository,
+            credentialsRepository: credentialsRepository,
+          ),
         ),
       ],
       child: const MyApp(),
@@ -60,7 +63,7 @@ class Root extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CredentialsRepository credentialsRepository = context
-        .read<CredentialsRepository>();
+        .watch<CredentialsRepository>();
     return credentialsRepository.status == CredentialStatus.none
         ? LoginView(credentialsRepository: credentialsRepository, failed: false)
         : credentialsRepository.status == CredentialStatus.invalid

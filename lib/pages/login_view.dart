@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:asvz_autosignup/repositories/credentials_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +17,7 @@ class LoginView extends StatelessWidget {
   void _onSubmit() {
     String username = _usernameController.text.trim();
     String password = _passwordController.text.trim();
-    credentialsRepository.setCredentials(username, password);
+    unawaited(credentialsRepository.setCredentials(username, password));
   }
 
   @override

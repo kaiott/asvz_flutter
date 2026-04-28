@@ -27,6 +27,7 @@ class LessonCardViewModel {
       case LessonStatus.enrollmentAboutToBegin: return const Icon(Icons.alarm, color: Colors.black, size: statusIconSize,);
       case LessonStatus.waitingForSpot: return const Icon(Icons.remove_red_eye, color: Colors.blue, size: statusIconSize,);
       case LessonStatus.enrollPeriodOver: return const Icon(Icons.block, color: Colors.red, size: statusIconSize,);
+      case LessonStatus.unknown: return const Icon(Icons.question_mark, color: Colors.amber, size: statusIconSize,);
     }
   }
 

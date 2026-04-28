@@ -49,9 +49,6 @@ class TokenRepository {
       _tokenAcquiredAt = DateTime.now();
       _setStatus(TokenStatus.error);
     }
-    finally {
-      _refreshingFuture = null;
-    }
   }
 
   Future<void> waitUntil(DateTime until) async {
@@ -69,7 +66,11 @@ class TokenRepository {
   /* Async function to refresh the token. Sets appropriate state depending on outcome. */
   Future<void> refreshToken() async {
     final f = _refreshingFuture ??= _refreshToken();
-    await f;
+    try {
+      await f;
+    } finally {
+      if (identical(_refreshingFuture, f)) _refreshingFuture = null; // Identical check to prevent race conditions.
+    }
   }
 
   /* For most usages when a token is required, this is the appropriate function to call.
@@ -77,11 +78,19 @@ class TokenRepository {
   TODO: What if refreshToken fails and _token is null?
   Now return type is nullable String, maybe instead non-nullable but throw Exception?
   Not sure */
-  Future<String?> ensureToken() async {
+  Future<String> ensureToken() async {
+    // Precheck if we are already in error.
+    if (status == TokenStatus.error) {
+      throw Exception("Token status is in error state. Need manual refresh or restart.");
+    }
     if (!checkTokenValid()) {
       await refreshToken();
     }
-    return _token;
+    // Check if we entered error status, otherwise we have token.
+    if (status == TokenStatus.error) {
+      throw Exception("Token status is in error state. Need manual refresh or restart.");
+    }
+    return _token!;
   }
 
   /* check if status of token is still valid if it was valid (i.e. transition valid -> expired)

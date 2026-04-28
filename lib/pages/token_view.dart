@@ -22,6 +22,7 @@ class TokenView extends StatelessWidget {
               ],
             ),
             Text(tokenModel.refreshText),
+            OutlinedButton(onPressed: tokenModel.onLogoutButtonClicked, child: Text("Logout"))
           ],
         ),
       ),

@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:asvz_autosignup/repositories/credentials_repository.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TokenViewModel extends ChangeNotifier {
   final TokenRepository tokenRepository;
+  final CredentialsRepository credentialsRepository;
 
-  TokenViewModel({required this.tokenRepository}) {
+  TokenViewModel({required this.tokenRepository, required this.credentialsRepository}) {
     tokenRepository.tokenStatusListenable.addListener(onTokenStatusChanged);
   }
 
@@ -41,6 +43,10 @@ class TokenViewModel extends ChangeNotifier {
 
   void onTokenStatusChanged() {
     notifyListeners();
+  }
+
+  void onLogoutButtonClicked() {
+    unawaited(credentialsRepository.logOut());
   }
 
   bool get isBusy => tokenRepository.status == TokenStatus.refreshing;

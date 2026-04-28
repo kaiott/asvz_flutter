@@ -18,6 +18,10 @@ class LessonAgent { //Also a service I think
   }
 
   Future<void> start() async {
+    if (DateTime.now().isAfter(lesson.enrollmentUntil)) {
+      _setStatus(LessonStatus.unknown);
+      return;
+    }
     int numFreeSpots = await fetchNumberOfFreeSpots(lesson.id);
     _setStatus(LessonStatus.beforeEnrollDate);
     await waitUntil(lesson.enrollmentFrom.add(Duration(minutes: -5)));
@@ -34,9 +38,15 @@ class LessonAgent { //Also a service I think
       _setStatus(LessonStatus.waitingForSpot);
       numFreeSpots = await fetchNumberOfFreeSpots(lesson.id);
       if (numFreeSpots > 0) {
-        print('trying to enroll with ${await tokenRepository.ensureToken()}');
-        enrolled = await tryEnroll(lesson.id, (await tokenRepository.ensureToken())!);
-        print('tryenroll returned $enrolled');
+        try {
+          print('trying to enroll with ${await tokenRepository.ensureToken()}');
+          enrolled = await tryEnroll(lesson.id, (await tokenRepository.ensureToken()));
+          print('tryenroll returned $enrolled');
+        } catch(e) {
+          _setStatus(LessonStatus.none);
+          print("error $e");
+        }
+
       } else {
         print('waiting since $numFreeSpots free spots');
         await Future.delayed(Duration(seconds: 2));
