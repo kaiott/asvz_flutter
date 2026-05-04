@@ -109,4 +109,11 @@ class TokenRepository {
     );
     return true;
   }
+
+  void clearToken() {
+    _token = null;
+    _tokenAcquiredAt = null;
+    _errorMessage = null;
+    _setStatus(TokenStatus.none);
+  }
 }

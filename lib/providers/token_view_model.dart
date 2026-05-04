@@ -49,6 +49,7 @@ class TokenViewModel extends ChangeNotifier {
 
   void onLogoutButtonClicked() {
     lessonRepository.clear(); // remove all lessons from database before logging out.
+    tokenRepository.clearToken(); // remove token on logout.
     unawaited(credentialsRepository.logOut());
   }
 
