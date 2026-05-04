@@ -66,12 +66,14 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TokenRepository tokenRepository = context
+        .read<TokenRepository>();
     CredentialsRepository credentialsRepository = context
         .watch<CredentialsRepository>();
     return credentialsRepository.status == CredentialStatus.none
-        ? LoginView(credentialsRepository: credentialsRepository, failed: false)
+        ? LoginView(tokenRepository: tokenRepository, credentialsRepository:  credentialsRepository, failed: false)
         : credentialsRepository.status == CredentialStatus.invalid
-        ? LoginView(credentialsRepository: credentialsRepository, failed: true)
+        ? LoginView(tokenRepository: tokenRepository, credentialsRepository: credentialsRepository, failed: true)
         : const MyHomePage();
   }
 }

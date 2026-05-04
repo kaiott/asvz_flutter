@@ -35,10 +35,10 @@ class TokenRepository {
   DateTime? get tokenExpiresAt =>
       _tokenAcquiredAt?.add(Duration(hours: 1, minutes: 55));
 
-  Future<void> _refreshToken() async {
+  Future<void> _refreshToken([Map<String, String>? credentials]) async {
     _setStatus(TokenStatus.refreshing);
     try {
-      _token = await updateAccessToken(credentialsRepository.credentials);
+      _token = await updateAccessToken(credentials ?? credentialsRepository.credentials);
       _errorMessage = null;
       _tokenAcquiredAt = DateTime.now();
       unawaited(expiryTimer());
@@ -64,13 +64,18 @@ class TokenRepository {
   Future<void>? _refreshingFuture;
 
   /* Async function to refresh the token. Sets appropriate state depending on outcome. */
-  Future<void> refreshToken() async {
-    final f = _refreshingFuture ??= _refreshToken();
+  Future<void> refreshToken([Map<String, String>? credentials]) async {
+    final f = _refreshingFuture ??= _refreshToken(credentials);
     try {
       await f;
     } finally {
       if (identical(_refreshingFuture, f)) _refreshingFuture = null; // Identical check to prevent race conditions.
     }
+  }
+
+  Future<bool> validateCredentials(String username, String password) async {
+    await refreshToken({"username": username, "password": password});
+    return status == TokenStatus.valid;
   }
 
   /* For most usages when a token is required, this is the appropriate function to call.

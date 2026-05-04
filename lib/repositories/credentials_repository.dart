@@ -44,8 +44,12 @@ class CredentialsRepository with ChangeNotifier{
     return {'username': _username!, 'password': _password!};
   }
 
-  Future<void> setCredentials(String username, String password) async {
-    // TODo: check if they are valid
+  Future<void> setCredentials(String username, String password, Future<bool> Function(String, String) validateCredentials) async {
+    bool valid = await validateCredentials(username, password);
+    if (!valid) {
+      _setStatus(CredentialStatus.invalid);
+      return;
+    }
     await _storage.write(key: _usernameKey, value: username);
     await _storage.write(key: _passwordKey, value: password);
     _username = username;
