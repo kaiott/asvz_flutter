@@ -15,6 +15,7 @@ class LessonRepository with ChangeNotifier {
   List<Lesson> get all => _lessons.values.toList()..sort();
   List<Lesson> get managed =>
       _lessons.values.where((l) => l.managed && !l.isPast()).toList()..sort();
+  List<Lesson> get past => _lessons.values.where((l) => l.isPast()).toList()..sort();
   List<Lesson> filtered(bool Function(Lesson) filter) =>
       _lessons.values.where(filter).toList()..sort();
 
@@ -47,6 +48,24 @@ class LessonRepository with ChangeNotifier {
     lessonDatabaseService.delete(lesson);
     notifyListeners();
     return true;
+  }
+
+  void clearPast() {
+    for (Lesson lesson in past) {
+      _killAgent(lesson);
+      _lessons.remove(lesson.id);
+      lessonDatabaseService.delete(lesson);
+    }
+    notifyListeners();
+  }
+
+  void clear() {
+    for (Lesson lesson in all) {
+      _killAgent(lesson);
+      _lessons.remove(lesson.id);
+      lessonDatabaseService.delete(lesson);
+    }
+    notifyListeners();
   }
 
   bool addToManaged(Lesson lesson) {

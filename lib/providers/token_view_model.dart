@@ -1,15 +1,17 @@
 import 'dart:async';
 
 import 'package:asvz_autosignup/repositories/credentials_repository.dart';
+import 'package:asvz_autosignup/repositories/lesson_repository.dart';
 import 'package:asvz_autosignup/repositories/token_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TokenViewModel extends ChangeNotifier {
+  final LessonRepository lessonRepository;
   final TokenRepository tokenRepository;
   final CredentialsRepository credentialsRepository;
 
-  TokenViewModel({required this.tokenRepository, required this.credentialsRepository}) {
+  TokenViewModel({required this.lessonRepository, required this.tokenRepository, required this.credentialsRepository}) {
     tokenRepository.tokenStatusListenable.addListener(onTokenStatusChanged);
   }
 
@@ -46,6 +48,7 @@ class TokenViewModel extends ChangeNotifier {
   }
 
   void onLogoutButtonClicked() {
+    lessonRepository.clear(); // remove all lessons from database before logging out.
     unawaited(credentialsRepository.logOut());
   }
 

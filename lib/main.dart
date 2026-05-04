@@ -25,6 +25,11 @@ void main() async {
       await HiveLessonDatabaseService.create();
   final credentialsRepository = CredentialsRepository();
   await credentialsRepository.checkCredentials();
+  if (credentialsRepository.status == CredentialStatus.none) {
+    // if not logged in clear database
+    // this is only safeguard, because on log out all lessons are removed too.
+    lessonDatabaseService.clear();
+  }
   final tokenRepository = TokenRepository(
     credentialsRepository: credentialsRepository,
   );
@@ -32,8 +37,6 @@ void main() async {
     tokenRepository: tokenRepository,
     lessonDatabaseService: lessonDatabaseService,
   );
-
-  // TODO: if credentialsRepository.status is none or invalid, delete database
 
   runApp(
     MultiProvider(
@@ -47,6 +50,7 @@ void main() async {
         ),
         ChangeNotifierProvider<TokenViewModel>(
           create: (context) => TokenViewModel(
+            lessonRepository: lessonRepository,
             tokenRepository: tokenRepository,
             credentialsRepository: credentialsRepository,
           ),

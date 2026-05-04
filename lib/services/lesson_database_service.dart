@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:asvz_autosignup/models/lesson.dart';
 import 'package:hive/hive.dart';
 
@@ -5,6 +7,7 @@ abstract interface class LessonDatabaseService {
   Map<int, Lesson> loadAll();
   void save(Lesson lesson);
   void delete(Lesson lesson);
+  void clear();
 }
 
 class HiveLessonDatabaseService implements LessonDatabaseService {
@@ -24,11 +27,16 @@ class HiveLessonDatabaseService implements LessonDatabaseService {
 
   @override
   void save(Lesson lesson) {
-    _box.put(lesson.id, lesson);
+    unawaited(_box.put(lesson.id, lesson));
   }
 
   @override
   void delete(Lesson lesson) {
-    _box.delete(lesson.id);
+    unawaited(_box.delete(lesson.id));
+  }
+
+  @override
+  void clear() {
+    unawaited(_box.clear());
   }
 }

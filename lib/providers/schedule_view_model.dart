@@ -57,6 +57,7 @@ class PastScheduleViewModel extends ScheduleViewModel{
 
   @override
   void onFABClicked(BuildContext context) {
+    _lessonRepository.clearPast();
     print('should delete all past lessons');
   }
 }
