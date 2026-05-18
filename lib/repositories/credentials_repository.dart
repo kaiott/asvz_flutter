@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum CredentialStatus {none, signedIn, invalid}
+enum CredentialStatus {none, signedIn, invalid, validating}
 
 class CredentialsRepository with ChangeNotifier{
   static const _storage = FlutterSecureStorage();

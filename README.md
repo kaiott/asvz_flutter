@@ -53,6 +53,13 @@ This Flutter app helps users automatically enroll in university sports lessons a
    - Ability to export/import lesson data as JSON.
    - The "Option" button in the detail panel is a placeholder with no functionality yet.
    - The "Log" tab currently shows only token status, not a proper event log.
+   - Status icons show details when hovered over (or clicked on phone)
+   - Log tab includes information from the profile (name)
+
+5. **User personalization**:
+   - Get favourite lessons as suggestions in heart section
+   - Can be the ones that the asvz app suggests or custom implementation
+
 
 ## 🐛 Known Bugs
 

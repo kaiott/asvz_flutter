@@ -1,54 +1,36 @@
-import 'dart:async';
-
-import 'package:asvz_autosignup/repositories/credentials_repository.dart';
-import 'package:asvz_autosignup/repositories/token_repository.dart';
+import 'package:asvz_autosignup/providers/login_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatelessWidget {
-  final TokenRepository tokenRepository;
-  final CredentialsRepository credentialsRepository;
-  final bool failed;
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  LoginView({super.key, required this.credentialsRepository, required this.tokenRepository, this.failed = false});
-
-  String? get error {
-    return failed ? "Incorrect credentials" : null;
-  }
-
-  void _onSubmit() {
-    String username = _usernameController.text.trim();
-    String password = _passwordController.text.trim();
-    unawaited(credentialsRepository.setCredentials(username, password, tokenRepository.validateCredentials));
-  }
+  const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Text("Welcome"),
-          TextField(
-            controller: _usernameController,
-            decoration: InputDecoration(
-              labelText: "Username",
-              errorText: error,
+    return Consumer<LoginViewModel>(
+      builder: (context, vm, child) => Scaffold(
+        body: Column(
+          children: [
+            Text("Welcome"),
+            TextField(
+              controller: vm.usernameController,
+              decoration: InputDecoration(
+                labelText: "Username",
+                errorText: vm.errorText,
+              ),
             ),
-          ),
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: "Password",
-              errorText: error,
+            TextField(
+              controller: vm.passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: "Password",
+                errorText: vm.errorText,
+              ),
+              onSubmitted: (_) => vm.onSubmit?.call(),
             ),
-            onSubmitted: (_) => _onSubmit(),
-          ),
-          OutlinedButton(
-          onPressed: _onSubmit,
-          child: Text("Login"),
+            OutlinedButton(onPressed: vm.onSubmit, child: Text("Login")),
+          ],
         ),
-        ],
       ),
     );
   }

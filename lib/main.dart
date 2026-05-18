@@ -1,6 +1,7 @@
 import 'package:asvz_autosignup/pages/login_view.dart';
 import 'package:asvz_autosignup/pages/schedule_view.dart';
 import 'package:asvz_autosignup/pages/token_view.dart';
+import 'package:asvz_autosignup/providers/login_view_model.dart';
 import 'package:asvz_autosignup/providers/schedule_view_model.dart';
 import 'package:asvz_autosignup/providers/token_view_model.dart';
 import 'package:asvz_autosignup/repositories/credentials_repository.dart';
@@ -66,15 +67,17 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TokenRepository tokenRepository = context
-        .read<TokenRepository>();
     CredentialsRepository credentialsRepository = context
         .watch<CredentialsRepository>();
-    return credentialsRepository.status == CredentialStatus.none
-        ? LoginView(tokenRepository: tokenRepository, credentialsRepository:  credentialsRepository, failed: false)
-        : credentialsRepository.status == CredentialStatus.invalid
-        ? LoginView(tokenRepository: tokenRepository, credentialsRepository: credentialsRepository, failed: true)
-        : const MyHomePage();
+    return credentialsRepository.status == CredentialStatus.signedIn
+        ? const MyHomePage()
+        : ChangeNotifierProvider<LoginViewModel>(
+            create: (context) => LoginViewModel(
+              tokenRepository: context.read<TokenRepository>(),
+              credentialsRepository: credentialsRepository,
+            ),
+            child: LoginView(),
+          );
   }
 }
 
